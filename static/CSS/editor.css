@@ -1,0 +1,152 @@
+:root {
+  --border: 2px solid white;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#wrap {
+  margin: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  background: rgb(238, 250, 78);
+  background: radial-gradient(
+    circle,
+    rgba(238, 250, 78, 1) 0%,
+    rgba(255, 140, 8, 1) 100%
+  );
+  overflow: hidden;
+}
+
+#canvas-align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#editor {
+  background: red;
+  /* border: var(--border); */
+}
+
+#options {
+  width: 640px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+#placeable,
+#tools {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#placeable .item,
+#tools .item {
+  border-left: 2px solid lightgray;
+}
+
+#placeable .first,
+#tools .first {
+  border: none;
+}
+
+#placeable {
+  width: 410px;
+}
+
+#tools {
+  width: 200px;
+}
+
+.item {
+  width: 75px;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.item:hover {
+  background: whitesmoke;
+}
+
+#pointer {
+  width: 14px;
+  height: 14px;
+  background: lightgray;
+}
+
+#platform {
+  width: 20px;
+  height: 20px;
+  background: lightgray;
+}
+
+#wall {
+  width: 20px;
+  height: 20px;
+  background: slategray;
+}
+
+#start {
+  width: 20px;
+  height: 20px;
+  background: lime;
+}
+
+#food {
+  width: 20px;
+  height: 20px;
+  background: gold;
+  border-radius: 50%;
+}
+
+#rect {
+  width: 40px;
+  height: 40px;
+  background: lightgray;
+}
+
+#line {
+  width: 50px;
+  height: 5px;
+  transform: rotate(315deg);
+  background: lightgray;
+}
+
+img {
+  user-select: none;
+}
+
+.selected {
+  filter: brightness(80%);
+}
+
+.disable {
+  opacity: 60%;
+}
+
+#create {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  padding: 5px;
+}

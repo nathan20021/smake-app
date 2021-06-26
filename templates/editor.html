@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smake Editor</title>
+    <link rel="stylesheet" type="text/css" href="../static/CSS/editor.css">
+    <script src="https://use.fontawesome.com/releases/v5.15.2/js/all.js"></script>
+</head>
+<body>
+    <button id="create">Create Level</button>
+    <div id="wrap">
+        <img src="../static/Images/title.png" alt="smake title image" draggable="false">
+        <div id="canvas-align">
+            <canvas id="editor" width="640px" height="480px"></canvas>
+        </div>
+        <div id="options">
+            <div id="placeable">
+                <div class="item first selected">
+                    <div id="platform"></div>
+                </div>
+                <div class="item">
+                    <div id="wall"></div>
+                </div>
+                <div class="item">
+                    <div id="food"></div>
+                </div>
+                <div class="item">
+                    <div id="start"></div>
+                </div>
+                <div class="item">
+                    <div id="eraser">
+                        <i class="fa fa-eraser" style="font-size:36px;color:pink"></i>
+                    </div>
+                </div>
+            </div>
+            <div id="tools">
+                <div class="item first selected">
+                    <div id="pointer"></div>
+                </div>
+                <div class="item">
+                    <div id="rect"></div>
+                </div>
+                <div class="item">
+                    <div id="line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../static/JS/editor.js"></script>
+</body>
+</html>
