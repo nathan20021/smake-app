@@ -397,9 +397,9 @@ function changeType(newType) {
 function createJson() {
     let foods = CELLS.filter(item => item.food === "yes").map(item => {return {x: item.x, y: item.y}});
     let startPos = CELLS.filter(item => item.start === "yes")[0];
-    let start = `{x: ${startPos.x}, y: ${startPos.y}}`;
+    let start = `{"x": ${startPos.x}, "y": ${startPos.y}}`;
     let walls = CELLS.filter(item => item.type === "wall").map(item => {return {x: item.x, y: item.y}});
     let platforms = CELLS.filter(item => item.type === "platform").map(item => {return {x: item.x, y: item.y}});
-    let jsonString = `{ startPos: ${JSON.stringify(start)}, foods: ${JSON.stringify(foods)}, walls: ${JSON.stringify(walls)}, platform: ${JSON.stringify(platforms)}}`;
+    let jsonString = `{ "startPos": ` + start + `, "foods": ${JSON.stringify(foods)}, "walls": ${JSON.stringify(walls)}, "platform": ${JSON.stringify(platforms)}}`;
     console.log(jsonString);
 }
