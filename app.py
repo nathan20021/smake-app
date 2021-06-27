@@ -2,7 +2,7 @@ import re
 from flask import Flask, render_template, redirect, url_for, session, request
 from flaskext.mysql import MySQL
 from database_access import *
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, LevelInput
 import ast
 
 app = Flask(__name__)
@@ -29,8 +29,10 @@ def login():
             pss = get_user_data(db, login_form.username.data)[2]
             psswd_input = login_form.password.data
             
+            print(psswd_input)
+            print(pss)
             if psswd_input == pss:
-                session['user'] = login_form.username.data
+                session['username'] = login_form.username.data
                 return redirect(url_for('level_preview'))
 
             return redirect(url_for('register'))
@@ -60,18 +62,18 @@ def register():
 
 @app.route('/level_preview')
 def level_preview():
-    if 'user' in session:
-        return render_template('level_preview.html', username = session['user'], levels = get_data_for_level_preview(db))
+    if 'username' in session:
+        return render_template('level_preview.html', username = session['username'], levels = get_data_for_level_preview(db))
     else:
         return redirect(url_for('login'))
  
 @app.route('/editor', methods=['GET', 'POST'])
 def editor():
     if request.method == 'POST':
-        add_level(db, "Test_level_name", request.get_json())
-        print("Jeff")
+        add_level(db, request.get_json(), session['username'])
         return redirect(url_for('level_preview'))
     return render_template('editor.html')
+
 
 @app.route('/game/<level_id>/')
 def game(level_id):
@@ -80,4 +82,4 @@ def game(level_id):
     return render_template('game.html', data = ast.literal_eval(data))
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug = True, host='0.0.0.0', port=8080)

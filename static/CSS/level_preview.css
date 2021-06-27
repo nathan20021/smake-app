@@ -43,6 +43,11 @@ a:hover {
     overflow-y: auto;
 }
 
+#add_level_button{
+    color: rgb(0, 183, 255);
+    font-size:25px ;
+}
+
 .container{
     display: flex;
     justify-content: center;

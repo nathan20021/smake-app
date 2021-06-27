@@ -1,9 +1,9 @@
-def add_level(db, name, data, created_by = 0 ,comment = 'null'):
+def add_level(db, data, created_by ,comment = 'null'):
     sqlcursor = db.cursor()
     db.ping()
     sqlcursor.execute(" SELECT COUNT(`id`) FROM levels ")
     level_id = sqlcursor.fetchone()[0] + 1
-    sqlcursor.execute(f" INSERT INTO levels VALUES({level_id}, \"{name}\", \"{data}\", {created_by}, 0, 0, \"{comment}\") ")
+    sqlcursor.execute(f" INSERT INTO levels VALUES({level_id}, \"Level {level_id}\", \"{data}\", \"{created_by}\", 0, 0, \"{comment}\") ")
     db.commit()
     sqlcursor.close()
     db.close()
