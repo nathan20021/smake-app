@@ -100,6 +100,24 @@ function checkCollisions() {
         snakeHead.y < 0 || snakeHead.y > HEIGHT / CELL_SIZE) {
         endGame();
     }
+
+    if (food.length == 0) {
+        clearInterval(gameLoop);
+        winGame();
+    }
+}
+
+function winGame() {
+    ctx.font = "73px Arial";
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.textAlign = "center";
+    ctx.strokeText("Level Complete", WIDTH / 2, HEIGHT / 2);
+    ctx.font = "72px Arial";
+    ctx.fillText("Level Complete", WIDTH / 2, HEIGHT / 2);
+    setTimeout(() => {
+        window.location = "/level_preview";
+    }, 2000);
 }
 
 function rectCollisions(obj1, obj2) {
