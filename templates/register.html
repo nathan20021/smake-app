@@ -1,4 +1,6 @@
-{% extends 'base.html'%} {% block head %} {% endblock %} {% block body %}
+{% extends 'base.html'%} {% block head %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/login.css') }}">
+{% endblock %} {% block body %}
 <div id="wrap">
     <h1> Sign Up</h1>
     <form action="" method="POST" novalidate>

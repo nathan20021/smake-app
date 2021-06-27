@@ -1,7 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, session
+import re
+from flask import Flask, render_template, redirect, url_for, session, request
 from flaskext.mysql import MySQL
-from database_access import add_level, add_user, get_user_num, get_user_data, count_duplicate_user
+from database_access import *
 from forms import LoginForm, RegisterForm
+import ast
 
 app = Flask(__name__)
 mysql = MySQL()
@@ -15,15 +17,11 @@ app.config['SECRET_KEY'] = 'my-name-is-Jeff'
 mysql.init_app(app)
 db = mysql.connect()
 
-@app.route('/')
-@app.route('/home')
-def home():
-    return render_template('home.html', username = session["smake_username"])
-
+@app.route('/' , methods=['POST','GET'])
 @app.route('/login', methods=['POST','GET'])
 def login():
-    if "smake_username" in session:
-        return redirect(url_for('home'))
+    if 'user' in session:
+        return redirect(url_for('level_preview'))
     else:
         login_form = LoginForm()
         if login_form.validate_on_submit():
@@ -32,8 +30,8 @@ def login():
             psswd_input = login_form.password.data
             
             if psswd_input == pss:
-                session["smake_username"] = login_form.username.data
-                return redirect(url_for('home'))
+                session['user'] = login_form.username.data
+                return redirect(url_for('level_preview'))
 
             return redirect(url_for('register'))
         return render_template( 'login.html', form = login_form )
@@ -59,6 +57,27 @@ def register():
             same_pass = False
     return render_template('register.html', form = register_form, same_pass = same_pass, duplicate = duplicate)
 
+
+@app.route('/level_preview')
+def level_preview():
+    if 'user' in session:
+        return render_template('level_preview.html', username = session['user'], levels = get_data_for_level_preview(db))
+    else:
+        return redirect(url_for('login'))
+ 
+@app.route('/editor', methods=['GET', 'POST'])
+def editor():
+    if request.method == 'POST':
+        add_level(db, "Test_level_name", request.get_json())
+        print("Jeff")
+        return redirect(url_for('level_preview'))
+    return render_template('editor.html')
+
+@app.route('/game/<level_id>/')
+def game(level_id):
+    data = get_data_from_level_id(db, level_id)
+    print(ast.literal_eval(data))
+    return render_template('game.html', data = ast.literal_eval(data))
 
 if __name__ == "__main__":
     app.run(debug = True)

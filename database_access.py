@@ -1,11 +1,36 @@
-def add_level(db, level_id, name, data, des = 'null' , comment = 'null'):
+def add_level(db, name, data, created_by = 0 ,comment = 'null'):
     sqlcursor = db.cursor()
     db.ping()
-    sqlcursor.execute(f" INSERT INTO levels VALUES({level_id}, \"{name}\", \"{data}\", \"{des}\", 0, 0, \"{comment}\") ")
+    sqlcursor.execute(" SELECT COUNT(`id`) FROM levels ")
+    level_id = sqlcursor.fetchone()[0] + 1
+    sqlcursor.execute(f" INSERT INTO levels VALUES({level_id}, \"{name}\", \"{data}\", {created_by}, 0, 0, \"{comment}\") ")
     db.commit()
     sqlcursor.close()
     db.close()
-    return 
+    return
+
+def get_data_from_level_id(db, level_id):
+    sqlcursor = db.cursor()
+    db.ping()
+    sqlcursor.execute(f" SELECT data FROM levels WHERE `id`={level_id}")
+    data = sqlcursor.fetchone()[0]
+    db.commit()
+    sqlcursor.close()
+    db.close()
+    return data
+
+def get_data_for_level_preview(db):
+    all_levels = []
+    sqlcursor = db.cursor()
+    db.ping()
+    sqlcursor.execute(f" SELECT * FROM levels")
+
+    for i in sqlcursor:
+        all_levels.append( [i[0], i[1], i[3], i[4], i[5]] )
+    db.commit()
+    sqlcursor.close()
+    db.close()
+    return all_levels
 
 
 def add_user(db, user_id, username, password, liked_levels = 'null', created = 'null', beaten='null'):
@@ -30,11 +55,8 @@ def get_user_num(db):
 def get_user_data(db, user_name):
     sqlcursor = db.cursor()
     db.ping()
-
     sqlcursor.execute(f" SELECT * FROM user WHERE `username`= \"{user_name}\" ")
-
     data = sqlcursor.fetchone()
-
     db.commit()
     sqlcursor.close()
     db.close()
