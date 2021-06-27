@@ -18,11 +18,11 @@ db = mysql.connect()
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html', username = session["username"])
+    return render_template('home.html', username = session["smake_username"])
 
 @app.route('/login', methods=['POST','GET'])
 def login():
-    if "username" in session:
+    if "smake_username" in session:
         return redirect(url_for('home'))
     else:
         login_form = LoginForm()
@@ -32,7 +32,7 @@ def login():
             psswd_input = login_form.password.data
             
             if psswd_input == pss:
-                session["username"] = login_form.username.data
+                session["smake_username"] = login_form.username.data
                 return redirect(url_for('home'))
 
             return redirect(url_for('register'))
@@ -52,7 +52,7 @@ def register():
                 print("Im in here")
                 num = get_user_num(db)
                 add_user(db, num+1, register_form.username.data, register_form.password.data)
-                return redirect(url_for('home'))
+                return redirect(url_for('login'))
             else:
                 duplicate = True
         else:
