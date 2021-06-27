@@ -401,5 +401,14 @@ function createJson() {
     let walls = CELLS.filter(item => item.type === "wall").map(item => {return {x: item.x, y: item.y}});
     let platforms = CELLS.filter(item => item.type === "platform").map(item => {return {x: item.x, y: item.y}});
     let jsonString = `{ "startPos": ` + start + `, "foods": ${JSON.stringify(foods)}, "walls": ${JSON.stringify(walls)}, "platform": ${JSON.stringify(platforms)}}`;
-    console.log(jsonString);
+
+    fetch('/editor', {
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        body: jsonString
+    }).then(function (response) { // At this point, Flask has printed our JSON
+        return response.text();
+    }).then(function (text) {
+        window.location = "/level_preview";
+    });
 }

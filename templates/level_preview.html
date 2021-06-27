@@ -1,0 +1,47 @@
+{% extends 'base.html'%} {% block head %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/level_preview.css') }}">
+{% endblock %} 
+
+{% block body %}
+
+<div class="bg"></div>
+<div id="wrap">
+    <h1>SMAKE LEVEL PREVIEW</h1>
+
+    <h1>Welcome {{username}} to Smake!</h1>
+
+    <p><a href="{{url_for('editor')}}"> Create your own level </a></p>
+    <div class="container">
+        <div class="level-cards-container">
+            {% for level in levels %}
+                <div class="level_cards">
+                    <div class="level-info">
+                        <h3> Level #{{level[0]}}: {{level[1]}} </h3>
+                        {% if level[2] != 0 %}
+                            <p> - created by: {{level[2]}} </p>
+                        {% endif %}
+                    </div>
+
+                    
+                    <div class="like-box-container">
+                        <div class= "like-box">
+                            <i class="far fa-thumbs-up"></i>
+                            <h3> {{level[3]}} </h3>
+                        </div>
+                        <div class= "like-box">
+                            <i class="far fa-thumbs-down"></i>
+                            <h3> {{level[4]}} </h3>
+                        </div>
+                    </div>
+                    <div class="play-button-container">
+                        <a href="{{url_for('game', level_id=level[0])}}"> <i class="far fa-play-circle"></i> </a>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

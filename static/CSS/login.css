@@ -1,0 +1,18 @@
+#wrap {
+    margin: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(238, 250, 78);
+    background: radial-gradient(
+      circle,
+      rgba(238, 250, 78, 1) 0%,
+      rgba(255, 140, 8, 1) 100%
+    );
+    overflow: hidden;
+}
