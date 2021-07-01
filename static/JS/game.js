@@ -1,8 +1,8 @@
 const FRAME_RATE = 45;
 const SNAKE_SPEED = 0.1;
-const WIDTH = 640;
-const HEIGHT = 480;
-const CELL_SIZE = 20;
+const WIDTH = 640
+const HEIGHT = 544;
+const CELL_SIZE = 16;
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -348,7 +348,7 @@ function handleInput(e) {
 
 function loadLevel(levelData) {
     let data = JSON.parse(levelData);
-    snake.body = [Object.assign({m_queue: [], freeze: false}, data.startPos)];
+    snake.body = [Object.assign({m_queue: [], freeze: false}, data.spawnPos)];
     walls = data.walls.map(item => {return {x: item.x, y: item.y, type: 'wall'}});
     food = data.foods;
     platforms = data.platform.map(item => {return {x: item.x, y: item.y, type: 'platform'}});

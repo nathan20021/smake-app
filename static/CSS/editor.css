@@ -12,8 +12,9 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  gap: 5%;
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
@@ -38,7 +39,7 @@
 }
 
 #options {
-  width: 640px;
+  width: 830px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -65,31 +66,31 @@
 }
 
 #placeable {
-  width: 410px;
+  width: 480px;
 }
 
 #tools {
-  width: 200px;
+  width: 300px;
 }
 
 .item {
-  width: 75px;
-  height: 75px;
+  width: 60px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: white;
 }
 
-.item:hover {
+.item:not(.selected, .disable):hover {
   background: whitesmoke;
 }
 
-#pointer {
+/* #pointer {
   width: 14px;
   height: 14px;
   background: lightgray;
-}
+} */
 
 #platform {
   width: 20px;
@@ -103,7 +104,7 @@
   background: slategray;
 }
 
-#start {
+#spawn {
   width: 20px;
   height: 20px;
   background: lime;
@@ -117,16 +118,23 @@
 }
 
 #rect {
-  width: 40px;
-  height: 40px;
-  background: lightgray;
+  width: 25px;
+  height: 25px;
+  border: 6px solid black;
+}
+
+#circle {
+  width: 25px;
+  height: 25px;
+  border: 6px solid black;
+  border-radius: 50%;
 }
 
 #line {
   width: 50px;
   height: 5px;
   transform: rotate(315deg);
-  background: lightgray;
+  background: black;
 }
 
 img {
@@ -134,7 +142,7 @@ img {
 }
 
 .selected {
-  filter: brightness(80%);
+  filter: brightness(85%);
 }
 
 .disable {
