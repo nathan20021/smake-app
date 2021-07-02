@@ -108,6 +108,7 @@
         if (endCount <= 100) {
             endCount++;
         } else if (endCount > 100) {
+            endCount = 0;
             clearInterval(endLoop);
             endParticles = [];
             reloadLevel();
@@ -120,18 +121,21 @@
             if (snake.speedTicks == 0) {
                 if (rectCollisions(snakeHead, lava[i])) {
                     endGame();
+                    return;
                 }
             }
         }
         for (let i = 0; i < walls.length; i++) {
             if (rectCollisions(snakeHead, walls[i])) {
                 endGame();
+                return;
             }
         }
         for (let i = 0; i < trapdoors.length; i++) {
             if (trapdoors[i].open) {
                 if (rectCollisions(snakeHead, trapdoors[i])) {
                     endGame();
+                    return;
                 }
             }
         }
@@ -150,6 +154,7 @@
         if (snakeHead.x < 0 || snakeHead.x + 1 > WIDTH / CELL_SIZE ||
             snakeHead.y < 0 || snakeHead.y + 1 > HEIGHT / CELL_SIZE) {
             endGame();
+            return;
         }
 
         if (food.length == 0) {
