@@ -10,25 +10,36 @@
 <body>
     <button id="menu">Menu</button>
     <div id="wrap">
-        <canvas id="game" width="640px" height="480px"></canvas>
+        <canvas id="game" width="640px" height="544px"></canvas>
     </div>
     <script>
-        // FETCH THIS FROM DATABASE LATER
-    const FRAME_RATE = 45;
+    const FRAME_RATE = 50;
     const SNAKE_SPEED = 0.1;
     const WIDTH = 640;
-    const HEIGHT = 480;
-    const CELL_SIZE = 20;
+    const HEIGHT = 544;
+    const CELL_SIZE = 16;
     const menu = document.getElementById('menu');
+    let level_dat;
+    let image_trapdoor = new Image();
+    image_trapdoor.src = '/static/Images/trapdoor.png'
+    let image_lever_open = new Image();
+    image_lever_open.src = '/static/Images/lever_open.png'
+    let image_lever_closed = new Image();
+    image_lever_closed.src = '/static/Images/lever_closed.png'
+    let image_pepper = new Image();
+    image_pepper.src = '/static/Images/pepper.png'
 
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
 
     // FETCH THIS FROM DATABASE LATER
     let level = '{{ data | tojson | safe }}';
-    let snake = {dir: "none", q_dir: "none", body: [], dirBody: []};
+    let snake = {};
     let walls = [];
     let platforms = [];
+    let trapdoors = [];
+    let levers = [];
+    let peppers = [];
     let lava = [];
     let food = [];
     let gameLoop;
@@ -42,10 +53,19 @@
             window.location = "/level_preview";
         });
         loadLevel(level);
-        render();
         document.addEventListener('keydown', handleInput);
         gameLoop = setInterval(gameTick, 1000 / FRAME_RATE);
+        render();
     });
+
+    function reloadLevel() {
+        endParticles = [];
+        endCount = 0;
+        particleSize = 2;
+        loadLevel(level);
+        gameLoop = setInterval(gameTick, 1000 / FRAME_RATE);
+        render();
+    }
 
     function gameTick() {
         moveSnake();
@@ -90,20 +110,29 @@
         } else if (endCount > 100) {
             clearInterval(endLoop);
             endParticles = [];
-            location.reload();
+            reloadLevel();
         }
     }
 
     function checkCollisions() {
         let snakeHead = snake.body[0];
         for (let i = 0; i < lava.length; i++) {
-            if (rectCollisions(snakeHead, lava[i])) {
-                endGame();
+            if (snake.speedTicks == 0) {
+                if (rectCollisions(snakeHead, lava[i])) {
+                    endGame();
+                }
             }
         }
         for (let i = 0; i < walls.length; i++) {
             if (rectCollisions(snakeHead, walls[i])) {
                 endGame();
+            }
+        }
+        for (let i = 0; i < trapdoors.length; i++) {
+            if (trapdoors[i].open) {
+                if (rectCollisions(snakeHead, trapdoors[i])) {
+                    endGame();
+                }
             }
         }
         if (snake.body.length > 5) {
@@ -118,8 +147,8 @@
                 }
             }
         }
-        if (snakeHead.x < 0 || snakeHead.x > WIDTH / CELL_SIZE ||
-            snakeHead.y < 0 || snakeHead.y > HEIGHT / CELL_SIZE) {
+        if (snakeHead.x < 0 || snakeHead.x + 1 > WIDTH / CELL_SIZE ||
+            snakeHead.y < 0 || snakeHead.y + 1 > HEIGHT / CELL_SIZE) {
             endGame();
         }
 
@@ -193,39 +222,28 @@
             snake.q_dir = "none";
         }
         if (snake.dir != "none") {
-            if (!((snake.dir == "up" && snakeHead.y <= 0) ||
-                (snake.dir == "left" && snakeHead.x <= 0) ||
-                (snake.dir == "right" && snakeHead.x >= WIDTH / CELL_SIZE - 1) ||
-                (snake.dir == "down" && snakeHead.y >= HEIGHT / CELL_SIZE - 1))) {
-                    snakeQueueMove(snake.dir);
+            snakeQueueMove(snake.dir);
+        }
+        let snakeSpeed = SNAKE_SPEED;
+        if (snake.speedTicks > 0) {
+            snake.speedTicks -= 1.25;
+            if (snake.speedTicks < 0) {
+                snake.speedTicks = 0;
             }
         }
         for (let i = 0; i < snake.body.length; i++) {
             if (i == 0) {
                 if (snake.body[i].m_queue[0] == 'up') {
-                    // CHANGE RETURNS TO SNAKE.DIE()
-                    if (snake.body[i].y <= 0) {
-                        return;
-                    }
-                    snake.body[i].y -= SNAKE_SPEED;
+                    snake.body[i].y -= snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'right') {
-                    if (snake.body[i].x >= (WIDTH / CELL_SIZE) - 1) {
-                        return;
-                    }
-                    snake.body[i].x += SNAKE_SPEED;
+                    snake.body[i].x += snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'down') {
-                    if (snake.body[i].y >= (HEIGHT / CELL_SIZE) - 1) {
-                        return;
-                    }
-                    snake.body[i].y += SNAKE_SPEED;
+                    snake.body[i].y += snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'left') {
-                    if (snake.body[i].x <= 0) {
-                        return;
-                    }
-                    snake.body[i].x -= SNAKE_SPEED;
+                    snake.body[i].x -= snakeSpeed;
                     snake.body[i].m_queue.shift();
                 }
                 for (let i = 0; i < food.length; i++) {
@@ -235,13 +253,29 @@
                         snake.body.splice(1, 0, {x: snake.body[0].x, y: snake.body[0].y, m_queue: [], freeze: true});
                     }   
                 }
+                for (let i = 0; i < peppers.length; i++) {
+                    if (circleRectCollision(peppers[i], snake.body[0])) {
+                        // console.log(peppers[i], snake.body[0]);
+                        peppers.splice(i, 1);
+                        snake.speedTicks = 150;
+                    }
+                }
+                for (let i = 0; i < levers.length; i++) {
+                    if (!levers[i].open && circleRectCollision(levers[i], snake.body[0])) {
+                        // console.log(peppers[i], snake.body[0]);
+                        levers[i].open = true;
+                        for (let i = 0; i < trapdoors.length; i++) {
+                            trapdoors[i].open = !trapdoors[i].open;
+                        }
+                    }
+                }
             } else {
                 if (snake.body[i].freeze) {
                     if (Math.abs(snake.body[i - 1].x - snake.body[i].x) <= 0.3 &&
                         Math.abs(snake.body[i - 1].y - snake.body[i].y) <= 0.3) {
                         snake.body[i].freeze = false;
                         let newArr = [];
-                        for (let a = 0; a < ((1 / SNAKE_SPEED) - 4) * (snake.body.length - 1); a++) {
+                        for (let a = 0; a < ((1 / snakeSpeed) - 4) * (snake.body.length - 1); a++) {
                             newArr.unshift("none");
                         }
                         let prevQ = snake.body[i - 1].m_queue;
@@ -251,22 +285,22 @@
                     }
                 }
                 if (snake.body[i].m_queue[0] == 'up') {
-                    snake.body[i].y -= SNAKE_SPEED;
+                    snake.body[i].y -= snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'right') {
-                    snake.body[i].x += SNAKE_SPEED;
+                    snake.body[i].x += snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'down') {
-                    snake.body[i].y += SNAKE_SPEED;
+                    snake.body[i].y += snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else if (snake.body[i].m_queue[0] == 'left') {
-                    snake.body[i].x -= SNAKE_SPEED;
+                    snake.body[i].x -= snakeSpeed;
                     snake.body[i].m_queue.shift();
                 } else {
                     snake.body[i].m_queue.shift();
                 }
-                snake.body[i].x = Math.round(snake.body[i].x * 10) / 10;
-                snake.body[i].y = Math.round(snake.body[i].y * 10) / 10;
+                snake.body[i].x = Math.round(snake.body[i].x * 100) / 100;
+                snake.body[i].y = Math.round(snake.body[i].y * 100) / 100;
             }
         }
     }
@@ -301,14 +335,48 @@
         ctx.strokeStyle = 'black';
         for (let i = 0; i < food.length; i++) {
             ctx.beginPath();
-            ctx.arc(food[i].x * CELL_SIZE + CELL_SIZE / 2, food[i].y * CELL_SIZE + CELL_SIZE / 2, 8, 0, 2 * Math.PI);
+            ctx.arc(food[i].x * CELL_SIZE + CELL_SIZE / 2, food[i].y * CELL_SIZE + CELL_SIZE / 2, Math.ceil(CELL_SIZE / 2) - 2, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
         }
+        // Render peppers
+        for (let i = 0; i < peppers.length; i++) {
+            ctx.drawImage(image_pepper, peppers[i].x * CELL_SIZE, peppers[i].y * CELL_SIZE);
+        }
+        // Render levers
+        for (let i = 0; i < levers.length; i++) {
+            if (levers[i].open) {
+                ctx.drawImage(image_lever_closed, levers[i].x * CELL_SIZE, levers[i].y * CELL_SIZE);
+            } else {
+                ctx.drawImage(image_lever_open, levers[i].x * CELL_SIZE, levers[i].y * CELL_SIZE);
+            }
+        }
+        // Render trapdoors
+        for (let i = 0; i < trapdoors.length; i++) {
+            if (trapdoors[i].open) {
+                let x = trapdoors[i].x;
+                let y = trapdoors[i].y;
+                // EVEN
+                if ((x + y) % 2 == 0) {
+                    ctx.fillStyle = "hsla(0, 95%, 50%, 1)";
+                }
+                // ODD
+                else {
+                    ctx.fillStyle = "hsla(0, 95%, 43%, 1)";
+                }
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            } else {
+                ctx.drawImage(image_trapdoor, trapdoors[i].x * CELL_SIZE, trapdoors[i].y * CELL_SIZE);
+            }
+        }
         // Render player
-        ctx.fillStyle = 'lime';
         for (let i = snake.body.length - 1; i >= 0; i--) {
             if (i == 0) {
+                if (snake.speedTicks == 0) {
+                    ctx.fillStyle = 'lime';
+                } else {
+                    ctx.fillStyle = 'crimson';
+                }
                 ctx.fillRect(snake.body[i].x * CELL_SIZE, snake.body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 ctx.fillStyle = "black";
                 const EYE_SIZE = 5;
@@ -326,17 +394,19 @@
                     ctx.fillRect(snake.body[i].x * CELL_SIZE + 2, snake.body[i].y * CELL_SIZE + CELL_SIZE - 2 - EYE_SIZE, EYE_SIZE, EYE_SIZE);
                 }
             } else {
-                ctx.fillStyle = 'lime';
-                if (snake.body[i].poopoo) {
-                    ctx.fillStyle = 'red';
+                if (snake.speedTicks == 0) {
+                    ctx.fillStyle = 'lime';
+                } else {
+                    ctx.fillStyle = 'crimson';
                 }
-                ctx.fillRect(snake.body[i].x * CELL_SIZE + 2, snake.body[i].y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                ctx.fillRect(snake.body[i].x * CELL_SIZE, snake.body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
         }
     }
 
     function handleInput(e) {
         e = e || window.event;
+        console.log('babboey')
 
         // up arrow
         if (e.keyCode == '38') {
@@ -370,10 +440,14 @@
 
     function loadLevel(levelData) {
         let data = JSON.parse(levelData);
-        snake.body = [Object.assign({m_queue: [], freeze: false}, data.startPos)];
-        walls = data.walls.map(item => {return {x: item.x, y: item.y, type: 'wall'}});
+        snake = { speedTicks: 0, dir: "none", q_dir: "none", body: [], dirBody: [] };
+        snake.body = [Object.assign({m_queue: [], freeze: false, speedTicks: 0}, data.spawnPos)];
+        walls = data.walls;
+        trapdoors = data.trapdoors.map(item => { return { x: item.x, y: item.y, open: false}});
+        levers = data.levers.map(item => { return { x: item.x, y: item.y, open: false } });
+        peppers = data.peppers;
         food = data.foods;
-        platforms = data.platform.map(item => {return {x: item.x, y: item.y, type: 'platform'}});
+        platforms = data.platform;
         for (let x = 0; x < WIDTH / CELL_SIZE; x++) {
             for (let y = 0; y < HEIGHT / CELL_SIZE; y++) {
 
@@ -392,7 +466,15 @@
                         }
                     }
                     if (!inside) {
-                        lava.push({x, y, type: 'lava'});
+                        for (let c = 0; c < trapdoors.length; c++) {
+                            if (trapdoors[c].x == x && trapdoors[c].y == y) {
+                                inside = true;
+                                break;
+                            }
+                        }
+                        if (!inside) {
+                            lava.push({ x, y, type: 'lava' });
+                        }
                     }
                 }
 

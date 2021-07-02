@@ -13,37 +13,62 @@
     <div id="wrap">
         <img src="../static/Images/title.png" alt="smake title image" draggable="false">
         <div id="canvas-align">
-            <canvas id="editor" width="640px" height="480px"></canvas>
+            <canvas id="editor" width="640px" height="544px"></canvas>
         </div>
         <div id="options">
             <div id="placeable">
                 <div class="item first selected">
-                    <div id="platform"></div>
+                    <div id="platform" class="placeable"></div>
                 </div>
                 <div class="item">
-                    <div id="wall"></div>
+                    <div id="wall" class="placeable"></div>
                 </div>
                 <div class="item">
-                    <div id="food"></div>
+                    <div id="food" class="placeable"></div>
                 </div>
                 <div class="item">
-                    <div id="start"></div>
+                    <div id="spawn" class="placeable"></div>
                 </div>
                 <div class="item">
-                    <div id="eraser">
+                    <div id="pepper" class="placeable">
+                        <img src="../static/Images/pepper.png" alt="lever" style="transform: scale(1.75)">
+                    </div>
+                </div>
+                <div class="item">
+                    <div id="lever" class="placeable">
+                        <img src="../static/Images/lever_open.png" alt="lever" style="transform: scale(1.75)">
+                    </div>
+                </div>
+                <div class="item">
+                    <div id="trapdoor" class="placeable">
+                        <img src="../static/Images/trapdoor.png" alt="lever" style="transform: scale(1.75)">
+                    </div>
+                </div>
+                <div class="item">
+                    <div id="lava" class="placeable">
                         <i class="fa fa-eraser" style="font-size:36px;color:pink"></i>
                     </div>
                 </div>
             </div>
             <div id="tools">
                 <div class="item first selected">
-                    <div id="pointer"></div>
+                    <div id="pointer" class="tool">
+                        <i class="fas fa-pencil-alt" style="font-size:32px;"></i>
+                    </div>
                 </div>
                 <div class="item">
-                    <div id="rect"></div>
+                    <div id="rect" class="tool"></div>
                 </div>
                 <div class="item">
-                    <div id="line"></div>
+                    <div id="circle" class="tool"></div>
+                </div>
+                <div class="item">
+                    <div id="line" class="tool"></div>
+                </div>
+                <div class="item">
+                    <div id="fill" class="tool">
+                        <i class="fas fa-fill-drip" style="font-size:32px;"></i>
+                    </div>
                 </div>
             </div>
         </div>
