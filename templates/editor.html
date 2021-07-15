@@ -11,7 +11,10 @@
 <body>
     <button id="create">Create Level</button>
     <div id="wrap">
-        <img src="../static/Images/title.png" alt="smake title image" draggable="false">
+        <div id="level_name_input" class="input-container">
+            <label for="level_name">Level name:</label>
+            <input type="text" id="level_name" name="level_name" autocomplete="off">
+        </div>
         <div id="canvas-align">
             <canvas id="editor" width="640px" height="544px"></canvas>
         </div>

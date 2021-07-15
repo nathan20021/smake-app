@@ -6,9 +6,9 @@
 
 <div class="bg"></div>
 <div id="wrap">
-    <h1>SMAKE LEVEL PREVIEW</h1>
+    <img src="{{url_for('static', filename='Images/title.png')}}" alt="Smake Logo">
 
-    <h1>Welcome {{username}} to Smake!</h1>
+    <h1>Welcome {{user.user_name}} to Smake!</h1>
 
     <p><a href="{{url_for('editor')}}" id="add_level_button"><i class="fas fa-plus-circle"></i> Create your own level </a></p>
     <div class="container">
@@ -16,23 +16,23 @@
             {% for level in levels %}
                 <div class="level_cards">
                     <div class="level-info">
-                        <h3> Level {{level[0]}}</h3>
-                        {% if level[2] != 0 %}
-                            <p> - created by: {{level[2]}} </p>
+                        <h3>{{level[1]}}</h3>
+                        {% if level[5] != 0 %}
+                            <p> - {{level[4]}} </p>
                         {% endif %}
                     </div>
 
                     
-                    <!-- <div class="like-box-container">
+                    <div class="like-box-container">
                         <div class= "like-box">
-                            <i class="far fa-thumbs-up"></i>
+                            <i class="fas fa-thumbs-up"></i>
+                            <h3> {{level[2]}} </h3>
+                        </div>
+                        <div class= "like-box">
+                            <i class="fas fa-thumbs-down" onclick="jeff()"></i>
                             <h3> {{level[3]}} </h3>
                         </div>
-                        <div class= "like-box">
-                            <i class="far fa-thumbs-down"></i>
-                            <h3> {{level[4]}} </h3>
-                        </div>
-                    </div> -->
+                    </div>
                     <div class="play-button-container">
                         <a href="{{url_for('game', level_id=level[0])}}"> <i class="far fa-play-circle"></i> </a>
                     </div>

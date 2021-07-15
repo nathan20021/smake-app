@@ -4,6 +4,7 @@
 
 {% endblock %} {% block body %}
 <div id="wrap">
+    <img src="{{url_for('static', filename='Images/title.png')}}" alt="Smake Logo">
     <h1> Log In </h1>
     <form action="" method="POST">
         {{ form.hidden_tag() }}

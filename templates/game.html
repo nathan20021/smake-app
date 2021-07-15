@@ -33,7 +33,7 @@
     const ctx = canvas.getContext('2d');
 
     // FETCH THIS FROM DATABASE LATER
-    let level = '{{ data | tojson | safe }}';
+    let level = '{{ level.data | tojson | safe }}';
     let snake = {};
     let walls = [];
     let platforms = [];

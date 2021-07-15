@@ -1,8 +1,6 @@
-import re
 from flask import Flask, render_template, redirect, url_for, session, request
 from flaskext.mysql import MySQL
-from database_access import *
-from forms import LoginForm, RegisterForm, LevelInput
+from models import *
 import ast
 
 app = Flask(__name__)
@@ -16,6 +14,7 @@ app.config['SECRET_KEY'] = 'my-name-is-Jeff'
 
 mysql.init_app(app)
 db = mysql.connect()
+db_manager = DB_manager(db)
 
 @app.route('/' , methods=['POST','GET'])
 @app.route('/login', methods=['POST','GET'])
@@ -34,7 +33,6 @@ def login():
             if psswd_input == pss:
                 session['username'] = login_form.username.data
                 return redirect(url_for('level_preview'))
-
             return redirect(url_for('register'))
         return render_template( 'login.html', form = login_form )
 
@@ -47,11 +45,9 @@ def register():
     if register_form.validate_on_submit():
         #flash(f'Login requested for user {register_form.username.data}')
         if register_form.password.data == register_form.confirm_password.data:
-            duplicate_users_num = count_duplicate_user(db, register_form.username.data)
-            if duplicate_users_num == 0:
-                print("Im in here")
-                num = get_user_num(db)
-                add_user(db, num+1, register_form.username.data, register_form.password.data)
+            if not db_manager.user_already_existed(register_form.username.data):
+                #add_user(db, num+1, register_form.username.data, register_form.password.data)
+                db_manager.add_user(register_form.username.data, register_form.password.data)
                 return redirect(url_for('login'))
             else:
                 duplicate = True
@@ -63,23 +59,35 @@ def register():
 @app.route('/level_preview')
 def level_preview():
     if 'username' in session:
-        return render_template('level_preview.html', username = session['username'], levels = get_data_for_level_preview(db))
-    else:
-        return redirect(url_for('login'))
+        current_user = User(db_manager.db, session['username'])
+        return render_template('level_preview.html', user = current_user, levels = db_manager.get_data_for_level_preview())
+    return redirect(url_for('login'))
  
 @app.route('/editor', methods=['GET', 'POST'])
 def editor():
-    if request.method == 'POST':
-        add_level(db, request.get_json(), session['username'])
-        return redirect(url_for('level_preview'))
-    return render_template('editor.html')
-
+    if 'username' in session:
+        current_user = User(db_manager.db, session['username'])
+        if request.method == 'POST':
+            level_data = request.get_json()
+            level_name = level_data['level_name']
+            level_data.pop("level_name")
+            db_manager.add_level(level_name ,level_data, current_user)
+            return redirect(url_for('level_preview'))
+        return render_template('editor.html' , user = current_user)
+    return redirect(url_for('login'))
 
 @app.route('/game/<level_id>/')
 def game(level_id):
-    data = get_data_from_level_id(db, level_id)
-    print(ast.literal_eval(data))
-    return render_template('game.html', data = ast.literal_eval(data))
+    if 'username' in session:
+        current_level = Level(db_manager.db, level_id)
+        current_user = User(db_manager.db, session['username'])
+        return render_template('game.html', level = current_level, user = current_user)
+    return redirect(url_for('login'))
 
+@app.route('/logout')
+def logout():
+    if 'username' in session:
+        session.pop('username', None)
+    return redirect(url_for('login'))
 if __name__ == "__main__":
     app.run(debug = True, host='0.0.0.0', port=8080)

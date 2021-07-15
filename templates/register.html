@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='CSS/login.css') }}">
 {% endblock %} {% block body %}
 <div id="wrap">
+    <img src="{{url_for('static', filename='Images/title.png')}}" alt="Smake Logo">
     <h1> Sign Up</h1>
     <form action="" method="POST" novalidate>
         {% if not same_pass %}

@@ -443,7 +443,8 @@ function createJson() {
     let spawn = `{"x": ${spawnPos.x}, "y": ${spawnPos.y}}`;
     let walls = CELLS.filter(item => item.type === "wall").map(item => {return {x: item.x, y: item.y}});
     let platforms = CELLS.filter(item => item.type === "platform").map(item => {return {x: item.x, y: item.y}});
-    let jsonString = `{ "spawnPos": ` + spawn + `, "foods": ${JSON.stringify(foods)}, "levers": ${JSON.stringify(levers)}, "trapdoors": ${JSON.stringify(trapdoors)}, "peppers": ${JSON.stringify(peppers)}, "walls": ${JSON.stringify(walls)}, "platform": ${JSON.stringify(platforms)}}`;
+    let level_name = document.getElementById('level_name').value;
+    let jsonString = `{ "level_name": "`+ level_name +`" , "spawnPos": ` + spawn + `, "foods": ${JSON.stringify(foods)}, "levers": ${JSON.stringify(levers)}, "trapdoors": ${JSON.stringify(trapdoors)}, "peppers": ${JSON.stringify(peppers)}, "walls": ${JSON.stringify(walls)}, "platform": ${JSON.stringify(platforms)}}`;
 
     fetch('/editor', {
         headers: {'Content-Type': 'application/json'},
